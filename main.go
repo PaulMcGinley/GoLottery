@@ -1,12 +1,12 @@
 package main
 
 import (
-	"bufio" // Package bufio implements buffered Input/Output.
-	"fmt"
-	"math/rand"
-	"os" // Package os provides a platform-independent interface to operating system functionality.
-	"strconv"
-	"strings"
+	"bufio"     // Package bufio implements buffered Input/Output.
+	"fmt"       // Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
+	"math/rand" // Package rand implements pseudo-random number generators.
+	"os"        // Package os provides a platform-independent interface to operating system functionality.
+	"strconv"   // Package strconv implements conversions to and from string representations of basic data types.
+	"strings"   // Package strings implements simple functions to manipulate UTF-8 encoded strings.
 )
 
 const maxPlayerNumbers byte = 6 // The maximum number of numbers a player can select
@@ -27,8 +27,7 @@ var gameState GameState // Enum variable
 
 var prizePots = [...]float32{25, 100, 1000, 10000, 100000} // Prize pots for 3, 4, 5, 6, 6+bonus
 var playerNumbers []byte                                   // Numbers which the player has selected or been assigned
-// var winningNumbers []byte                                  // Numbers which have been drawn
-var remainingNumbers [59]byte // Pool of numbers that contain only numbers that have not been selected or drawn
+var remainingNumbers [59]byte                              // Pool of numbers that contain only numbers that have not been selected or drawn
 
 func main() {
 	gameState = home // Set the initial game state to home
@@ -52,7 +51,7 @@ func Home() {
 	fmt.Println("1.\tLucky Dip\n")
 	fmt.Println("2.\tPick Numbers\n")
 
-	key := ReadInput()
+	key := ReadInput() // Read the user's input
 
 	switch key {
 	case "1":
@@ -60,8 +59,6 @@ func Home() {
 	case "2":
 		gameState = pickNumbers
 	default:
-		//clearConsole()
-		//fmt.Println(key)
 		fmt.Printf("%s Invalid option\n\n", key)
 		Home()
 	}
@@ -84,15 +81,16 @@ func DrawNumbers() []byte {
 
 func LuckyDip() {
 	playerNumbers = DrawNumbers()
+
 	fmt.Println("Your numbers are: ", playerNumbers)
 	fmt.Println("Would you like to keep these numbers? (Y/N)")
+
 	key := ReadInput()
 
 	if strings.ToUpper(key) == "Y" {
 		gameState = results
 	} else {
 		playerNumbers = nil
-		//gameState = luckyDip
 	}
 }
 
@@ -102,13 +100,13 @@ func PickNumbers() {
 
 	for byte(len(playerNumbers)) < maxPlayerNumbers+1 {
 		fmt.Print("Please select a numbers between 1 and 59: ")
-		val := ReadInput()
-		byteVal, _ := strconv.Atoi(val)
+		val := ReadInput()           // Read the user's input
+		iVal, _ := strconv.Atoi(val) // Convert the user's input to an integer
 
-		if byteVal < 1 || byteVal > 59 {
+		if iVal < 1 || iVal > 59 {
 			fmt.Println("Invalid number, please try again")
-		} else if !(contains(playerNumbers, byte(byteVal))) {
-			playerNumbers = append(playerNumbers, byte(byteVal))
+		} else if !(contains(playerNumbers, byte(iVal))) {
+			playerNumbers = append(playerNumbers, byte(iVal))
 		} else {
 			fmt.Println("You have already selected that number")
 		}
@@ -121,6 +119,7 @@ func PickNumbers() {
 
 func Results() {
 	clearConsole()
+
 	winningNumbers := DrawNumbers()
 
 	fmt.Println("Your numbers are: ", playerNumbers)
@@ -129,8 +128,8 @@ func Results() {
 	matches := 0
 
 	for _, playerNumber := range playerNumbers { // discard index keep value
-		if contains(winningNumbers, playerNumber) {
-			matches++
+		if contains(winningNumbers, playerNumber) { // if the player number is in the winning numbers
+			matches++ // increment the matches
 		}
 	}
 
@@ -138,11 +137,12 @@ func Results() {
 		fmt.Println("Congratulations! You have won the jackpot!")
 	} else {
 		fmt.Printf("You matched %d numbers\n", matches)
-		//fmt.Printf("You have won £%.2f\n", prizePots[matches-3])
 	}
 
 	fmt.Println("Would you like to play again? (Y/N)")
+
 	key := ReadInput()
+
 	if strings.ToUpper(key) == "Y" {
 		playerNumbers = nil
 		gameState = home
